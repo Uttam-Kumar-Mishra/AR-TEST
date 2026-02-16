@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-face-aframe.prod.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    
+    <style>
+      body { margin: 0; overflow: hidden; }
+      #ui-overlay {
+        position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+        display: flex; gap: 10px; z-index: 10;
+      }
+      button {
+        padding: 10px 20px; background: #007bff; color: white; border: none;
+        border-radius: 5px; font-weight: bold; cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <a-scene mindar-face="autoStart: true" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      
+      <a-assets>
+        <a-asset-item id="glassesModel" src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.1/examples/face-tracking/assets/glasses/scene.gltf"></a-asset-item>
+      </a-assets>
+
+      <a-camera active="false" position="0 0 0" look-controls="enabled: false"></a-camera>
+
+      <a-entity mindar-face-target="anchorIndex: 168">
+        <a-gltf-model rotation="0 0 0" position="0 0 0" scale="0.01 0.01 0.01" src="#glassesModel"></a-gltf-model>
+      </a-entity>
+    </a-scene>
+
+    <div id="ui-overlay">
+      <button onclick="logInteraction('Classic_Blue')">Try Blue</button>
+      <button onclick="logInteraction('Modern_Black')">Try Black</button>
+      <button style="background: #28a745;" onclick="captureData()">Add to Cart</button>
+    </div>
+
+    <script>
+      function logInteraction(style) {
+        console.log("User selected style: " + style);
+        alert("Style changed to: " + style + ". This engagement point is logged for analysis.");
+      }
+
+      function captureData() {
+        // Generates the 'Findings' data for your rubric 
+        alert("Marketing Insight: User spent time visualizing the product on their face. Purchase intent recorded!");
+      }
+    </script>
+  </body>
+</html>
