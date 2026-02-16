@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Spatial-Commerce | PGPM AR Lab</title>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.1/dist/mindar-face-aframe.prod.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #header { position: absolute; top: 0; width: 100%; background: rgba(0,0,0,0.8); color: white; padding: 10px; display: flex; justify-content: space-between; z-index: 100; box-sizing: border-box; }
+        #product-bar { position: absolute; bottom: 0; width: 100%; background: white; height: 160px; overflow-x: scroll; display: flex; align-items: center; padding: 10px; gap: 15px; z-index: 100; border-top: 3px solid #007bff; }
+        .product-card { min-width: 100px; text-align: center; border: 1px solid #ddd; border-radius: 8px; padding: 5px; cursor: pointer; transition: 0.3s; }
+        .product-card:hover { border-color: #007bff; background: #f0f7ff; }
+        .btn-buy { background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        #msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.9); color: white; padding: 20px; border-radius: 10px; display: none; z-index: 200; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="header">
+        <div><strong>Spatial-Commerce</strong> (Wearables)</div>
+        <div>Wallet: <span id="balance">₹20,000</span></div>
+    </div>
+
+    <div id="msg"></div>
+
+    <div id="product-bar" id="catalog"></div>
+
+    <a-scene mindar-face="autoStart: true" embedded color-space="sRGB" renderer="colorManagement: true, physicallyCorrectLights" vr-mode-ui="enabled: false">
+        <a-assets id="assets-list"></a-assets>
+        <a-camera active="false" position="0 0 0" look-controls="enabled: false"></a-camera>
+        
+        <a-entity mindar-face-target="anchorIndex: 168">
+            <a-gltf-model id="glasses-vto" rotation="0 0 0" position="0 0 0" scale="0.01 0.01 0.01" src=""></a-gltf-model>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        // 1. Dataset Generation: 20 Wearables 
+        const products = [
+            {id: 1, name: "Aviator Black", price: 2500, color: "Black", model: "https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.1/examples/face-tracking/assets/glasses/scene.gltf"},
+            {id: 2, name: "Aviator Gold", price: 3200, color: "Gold", model: "https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.1/examples/face-tracking/assets/glasses/scene.gltf"}, // Simulating variants
+            {id: 3, name: "Wayfarer Red", price: 1800, color: "Red", model: ""},
+            {id: 4, name: "Sports Wrap", price: 4500, color: "Blue", model: ""},
+            // ... (Logic populates the rest to 20)
+        ];
+
+        // Fill remaining for demonstration
+        for(let i=5; i<=20; i++) {
+            products.push({id: i, name: "Wearable #"+i, price: 1000 + (i*200), color: i%2==0 ? "Black":"Silver", model: ""});
+        }
+
+        let currentWallet = 20000;
+        let startTime = Date.now();
+
+        // 2. Initialize UI
+        const catalog = document.getElementById('product-bar');
+        products.forEach(p => {
+            let card = document.createElement('div');
+            card.className = 'product-card';
+            card.innerHTML = `<strong>${p.name}</strong><br>₹${p.price}<br><button class="btn-buy" onclick="purchase(${p.id})">Buy</button>`;
+            card.onclick = () => tryOn(p);
+            catalog.appendChild(card);
+        });
+
+        // 3. VTO Functionality (Implementation of CO2)
+        function tryOn(product) {
+            const model = document.getElementById('glasses-vto');
+            // In a real app, model URL would change. Here we simulate visual change.
+            model.setAttribute('src', products[0].model); 
+            console.log(`[Marketing Log] User trying on ${product.name}. Tracking dwell time...`);
+        }
+
+        // 4. Commerce Logic (Decision Making - PO2)
+        function purchase(id) {
+            const product = products.find(p => p.id === id);
+            const msgBox = document.getElementById('msg');
+            
+            if (currentWallet >= product.price) {
+                currentWallet -= product.price;
+                document.getElementById('balance').innerText = `₹${currentWallet.toLocaleString()}`;
+                showMsg(`✅ Purchase Successful!<br>${product.name} added to collection.<br>Remaining: ₹${currentWallet}`);
+            } else {
+                showMsg(`❌ Insufficient Funds!<br>This item costs ₹${product.price}`);
+            }
+        }
+
+        function showMsg(text) {
+            const msgBox = document.getElementById('msg');
+            msgBox.innerHTML = text + `<br><br><button onclick="document.getElementById('msg').style.display='none'" style="padding:5px 15px">Close</button>`;
+            msgBox.style.display = 'block';
+        }
+
+        // 5. Analytics Log for Research Activity [cite: 28, 33]
+        window.onbeforeunload = () => {
+            let sessionTime = (Date.now() - startTime) / 1000;
+            console.log(`[Research Data] Session Ended. Total Immersion: ${sessionTime}s. Final Balance: ₹${currentWallet}`);
+        };
+    </script>
+</body>
+</html>
